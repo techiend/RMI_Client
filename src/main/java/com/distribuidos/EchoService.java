@@ -1,4 +1,4 @@
-package com.carlosverde;
+package com.distribuidos;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
