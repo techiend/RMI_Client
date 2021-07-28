@@ -1,10 +1,12 @@
 package com.distribuidos.model;
 
-import java.util.List;
 public class Account {
     int number;
     float current_balance;
     String user_id;
+
+    public Account() {
+    }
 
     public Account(String user_id) {}
 

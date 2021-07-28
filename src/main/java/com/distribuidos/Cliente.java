@@ -1,6 +1,11 @@
 package com.distribuidos;
 
 import com.distribuidos.implementation.AccountOption;
+import com.distribuidos.service.AccountService;
+import com.distribuidos.service.TransactionalService;
+
+import java.rmi.ConnectException;
+import java.rmi.Naming;
 import java.util.Scanner;
 
 public class Cliente {
@@ -11,50 +16,78 @@ public class Cliente {
         try {
 
             boolean shutdown = true;
+            int connectionTries = 0;
+            AccountService accountService = null;
+            TransactionalService transactionalService = null;
 
-            System.setProperty("java.rmi.server.hostname", "localhost");
-//            AccountService accountService = (AccountService) Naming.lookup("//localhost:8808/account");
-//            TransactionalService transactionalService = (TransactionalService) Naming.lookup("//localhost:8808/transactional");
-
-            while (shutdown){
-
-                clearScreen();
-                menu();
-                Scanner scan = new Scanner(System.in);
-                int option = scan.nextInt();
-
-                switch (option){
-                    case 1:
-//                        System.out.println("\nOpcion #1...");
-                        AccountOption.doOpenAccount();
-                        enterWait();
+            while (true) {
+                try {
+                    System.setProperty("java.rmi.server.hostname", "localhost");
+                    accountService = (AccountService) Naming.lookup("//localhost:8808/account");
+                    transactionalService = (TransactionalService) Naming.lookup("//localhost:8808/transactional");
+                    break;
+                } catch (Exception e) {
+                    if (connectionTries <3) {
+                        System.out.println("No se ha podido establecer comunicacion con el servidor...");
+                        connectionTries += 1;
+                        Thread.sleep(5000);
+                    }
+                    else {
                         break;
-                    case 2:
-                        System.out.println("\nOpcion #2...");
-                        enterWait();
-                        break;
-                    case 3:
-                        System.out.println("\nOpcion #3...");
-                        enterWait();
-                        break;
-                    case 4:
-                        System.out.println("\nOpcion #4...");
-                        enterWait();
-                        break;
-                    case 5:
-                        System.out.println("\nOpcion #5...");
-                        enterWait();
-                        break;
-                    case 0:
-                        System.out.println("\nHasta luego.....");
-                        enterWait();
-                        shutdown = false;
-                        break;
-                    default:
-                        System.out.println("\nLa opcion introducida no es correcta...");
-                        enterWait();
+                    }
                 }
+            }
 
+            if (connectionTries <3) {
+                while (shutdown) {
+
+                    try {
+                        clearScreen();
+                        menu();
+                        Scanner scan = new Scanner(System.in);
+                        int option = scan.nextInt();
+
+                        switch (option) {
+                            case 1:
+//                        System.out.println("\nOpcion #1...");
+                                AccountOption.doOpenAccount(accountService);
+                                enterWait();
+                                break;
+                            case 2:
+                                System.out.println("\nOpcion #2...");
+                                enterWait();
+                                break;
+                            case 3:
+                                System.out.println("\nOpcion #3...");
+                                enterWait();
+                                break;
+                            case 4:
+                                System.out.println("\nOpcion #4...");
+                                enterWait();
+                                break;
+                            case 5:
+                                System.out.println("\nOpcion #5...");
+                                enterWait();
+                                break;
+                            case 0:
+                                System.out.println("\nHasta luego.....");
+                                enterWait();
+                                shutdown = false;
+                                break;
+                            default:
+                                System.out.println("\nLa opcion introducida no es correcta...");
+                                enterWait();
+                        }
+                    } catch (ConnectException e) {
+                        System.out.println(e.getLocalizedMessage());
+                        accountService = (AccountService) Naming.lookup("//localhost:8808/account");
+                        transactionalService = (TransactionalService) Naming.lookup("//localhost:8808/transactional");
+                    }
+                }
+            }
+            else {
+                System.out.println("No se pudo establecer comunicaicon con el servidor.");
+                System.out.println("Por favor, comuniquese con el banco..");
             }
         }
         catch (Exception e) {
