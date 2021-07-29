@@ -1,9 +1,12 @@
 package com.distribuidos.model;
 
+import java.util.List;
+
 public class Account {
     int number;
     float current_balance;
     String user_id;
+    List<Transaction> transactions;
 
     public Account() {
     }
@@ -20,5 +23,13 @@ public class Account {
 
     public String getUser_id() {
         return user_id;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(List<Transaction> transactions) {
+        this.transactions = transactions;
     }
 }
