@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.distribuidos</groupId>
   <artifactId>RMI_Client</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.3</version>
   <build>
     <plugins>
       <plugin>
@@ -28,7 +28,7 @@
     </plugins>
   </build>
   <properties>
-    <maven.compiler.target>8</maven.compiler.target>
-    <maven.compiler.source>8</maven.compiler.source>
+    <maven.compiler.target>16</maven.compiler.target>
+    <maven.compiler.source>16</maven.compiler.source>
   </properties>
 </project>

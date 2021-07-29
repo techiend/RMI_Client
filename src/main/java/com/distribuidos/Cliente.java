@@ -197,7 +197,19 @@ public class Cliente {
         scanner.nextLine();
     }
 
+    public static void art(){
+        System.out.println("   __  __ _       _   ____              _      ");
+        System.out.println("  |  \\/  (_)     (_) |  _ \\            | |     ");
+        System.out.println("  | \\  / |_ _ __  _  | |_) | __ _ _ __ | | __  ");
+        System.out.println("  | |\\/| | | '_ \\| | |  _ < / _` | '_ \\| |/ /  ");
+        System.out.println("  | |  | | | | | | | | |_) | (_| | | | |   <   ");
+        System.out.println("  |_|  |_|_|_| |_|_| |____/ \\__,_|_| |_|_|\\_\\  ");
+        System.out.println("                                               ");
+        System.out.println("");
+    }
+
     public static void menu(){
+        art();
         System.out.println(":----------------------------------------:");
         System.out.println("|"+print("")+"|");
         System.out.println("|"+print("1. Apertura de cuenta.")+"|");
@@ -210,6 +222,7 @@ public class Cliente {
     }
 
     public static void subMenu(String name){
+        art();
         System.out.println(":----------------------------------------:");
         System.out.println("|"+print("")+"|");
         System.out.println("|"+print("Bienvenid@, "+name)+"|");
@@ -226,6 +239,7 @@ public class Cliente {
     }
 
     public static void accountSubMenu(User user){
+        art();
         System.out.println(":----------------------------------------:");
         System.out.println("|"+print("")+"|");
         System.out.println("|"+print("Seleccione una cuenta a consultar: ")+"|");
