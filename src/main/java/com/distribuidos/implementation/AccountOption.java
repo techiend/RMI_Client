@@ -134,7 +134,7 @@ public class AccountOption {
             }
 
             String stringResponse = accountService.validateUser(usuario, clave);
-//            System.out.println(stringResponse);
+            System.out.println(stringResponse);
 
             ObjectMapper mapper = new ObjectMapper();
             Response authResponse = mapper.readValue(stringResponse, Response.class);

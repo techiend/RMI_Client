@@ -1,19 +1,23 @@
 package com.distribuidos.model;
 
+import java.util.List;
+
 public class User {
     String document_id;
     String name;
     String username;
     String password;
+    List<Account> accounts;
 
     public User() {
     }
 
-    public User(String document_id, String name, String username, String password) {
+    public User(String document_id, String name, String username, String password, List<Account> accounts) {
         this.document_id = document_id;
         this.name = name;
         this.username = username;
         this.password = password;
+        this.accounts = accounts;
     }
 
     public String getDocument_id() {
@@ -46,5 +50,13 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
     }
 }
