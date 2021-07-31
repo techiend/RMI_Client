@@ -1,11 +1,13 @@
 package com.distribuidos.model;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class Transaction {
     int id;
     float amount;
-    Date date;
+    String date;
     String desc;
     int sourceNumber;
     int destinationNumber;
@@ -14,10 +16,11 @@ public class Transaction {
     public Transaction() {
     }
 
-    public Transaction(int id, float amount, Date date, String desc, int sourceNumber, int destinationNumber, String type) {
-        this.id = id;
+    public Transaction(float amount, Date date, String desc, int sourceNumber, int destinationNumber, String type) {
+
         this.amount = amount;
-        this.date = date;
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        this.date = sdf.format(date);
         this.desc = desc;
         this.sourceNumber = sourceNumber;
         this.destinationNumber = destinationNumber;
@@ -40,12 +43,13 @@ public class Transaction {
         this.amount = amount;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
     public void setDate(Date date) {
-        this.date = date;
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        this.date = sdf.format(date);
     }
 
     public String getDesc() {

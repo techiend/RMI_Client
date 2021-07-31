@@ -9,7 +9,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface TransactionalService extends Remote {
-    Transaction doDeposit(Deposit deposit) throws RemoteException;
+    Integer doDeposit(int destino, float monto, String descrip) throws RemoteException;
     Transaction doWithdrawal(Withdrawal withdrawal) throws RemoteException;
     Transaction doTransference(Transference transference) throws RemoteException;
 }

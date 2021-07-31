@@ -1,6 +1,7 @@
 package com.distribuidos;
 
 import com.distribuidos.implementation.AccountOption;
+import com.distribuidos.model.Account;
 import com.distribuidos.model.User;
 import com.distribuidos.service.AccountService;
 import com.distribuidos.service.TransactionalService;
@@ -113,7 +114,7 @@ public class Cliente {
                     accountsScreen(accountService, transactionalService, user);
                     break;
                 case 2:
-                    System.out.println("\nOpcion #2...");
+                    depositScreen(accountService, transactionalService, user);
                     enterWait();
                     break;
                 case 3:
@@ -254,8 +255,120 @@ public class Cliente {
         System.out.print("\n    Introduce una opcion: ");
     }
 
+    public static void depositSubMenu(User user){
+
+        art();
+        System.out.println(":----------------------------------------:");
+        System.out.println("|"+print("")+"|");
+        System.out.println("|"+print("Seleccione una cuenta a depositar: ")+"|");
+        System.out.println("|"+print("")+"|");
+        for (int i = 0; i < user.getAccounts().size(); i++) {
+            System.out.println("|"+print(String.format("%d. Cuenta #%d.",i+1, user.getAccounts().get(i).getNumber()))+"|");
+        }
+        System.out.println("|"+print("4. Cuenta de terceros.")+"|");
+        System.out.println("|"+print("")+"|");
+        System.out.println("|"+print("0. Atrás.")+"|");
+        System.out.println("|"+print("")+"|");
+        System.out.println(":----------------------------------------:");
+        System.out.print("\n    Introduce una opcion: ");
+    }
+
     public static String print(String text){
         return String.format("%-"+maxrows+"s", "    "+text).substring(0,maxrows);
+    }
+
+    public static void makeDeposit(AccountService accountService, TransactionalService transactionalService, int accountNumber) throws RemoteException {
+
+        float monto = 0;
+        Scanner scan = new Scanner(System.in);
+        String descrip;
+
+//                Validar monto introducido
+        while (true) {
+            scan = new Scanner(System.in);
+            System.out.print("Introduce el monto a depositar: ");
+            try {
+                monto = scan.nextFloat();
+                if (monto > 0)
+                    break;
+                else
+                    System.out.println("Debe introducir un monto mayor a 0.");
+            }
+            catch (Exception e) {
+                System.out.println("Introduce un monto valido con el formado: \"XXXX.XX\"...");
+            }
+        }
+        while (true) {
+            scan = new Scanner(System.in);
+            System.out.print("Descripcion: ");
+            descrip = scan.next().trim();
+            if (descrip.equals("")){
+                System.out.println("Debe introducir una descripcion...");
+            }
+            else{
+                break;
+            }
+        }
+
+        Integer doDeposit = transactionalService.doDeposit(accountNumber, monto, descrip);
+
+        if (doDeposit == 0)
+            System.out.println("Transaccion fallida...");
+        else
+            System.out.println("Transaccion exitosa...");
+    }
+
+    public static void depositScreen(AccountService accountService, TransactionalService transactionalService, User user)
+            throws MalformedURLException, NotBoundException, RemoteException
+    {
+
+        if (user.getAccounts().size() > 0) {
+            boolean shutdown = true;
+            while (shutdown) {
+                clearScreen();
+                depositSubMenu(user);
+                Scanner scan = new Scanner(System.in);
+                int option = scan.nextInt();
+
+                switch (option) {
+                    case 1:
+                        if (user.getAccounts().size() >= 1) {
+                            makeDeposit(accountService,transactionalService, user.getAccounts().get(0).getNumber());
+                            enterWait();
+                            break;
+                        }
+                    case 2:
+                        if (user.getAccounts().size() >= 2) {
+                            makeDeposit(accountService,transactionalService, user.getAccounts().get(1).getNumber());
+                            enterWait();
+                            break;
+                        }
+                    case 3:
+                        if (user.getAccounts().size() >= 3) {
+                            makeDeposit(accountService,transactionalService, user.getAccounts().get(2).getNumber());
+
+                            enterWait();
+                            break;
+                        }
+                    case 4:
+                        System.out.println("Cuenta de terceros... pedir datos");
+                        enterWait();
+                        shutdown = false;
+                        break;
+                    case 0:
+                        enterWait();
+                        shutdown = false;
+                        break;
+                    default:
+                        System.out.println("\nLa opcion introducida no es correcta...");
+                        enterWait();
+                }
+            }
+        }
+        else {
+            System.out.println("\nNo posee cuentas para consultar...");
+            enterWait();
+        }
     }
 
 }
