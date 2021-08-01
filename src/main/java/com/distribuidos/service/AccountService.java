@@ -9,4 +9,6 @@ public interface AccountService extends Remote {
     String createUser(String user) throws RemoteException;
     String createAccount(String document_id, float montoInicial) throws RemoteException;
     String getAccount(int number) throws RemoteException;
+    String getAccountUid(int number) throws RemoteException;
+    String getUserName(String document_id) throws RemoteException;
 }
