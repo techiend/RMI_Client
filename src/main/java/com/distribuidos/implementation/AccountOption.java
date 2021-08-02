@@ -52,7 +52,7 @@ public class AccountOption {
                     }
 
                 } else {
-                    System.out.println("Lo sentimos, ya posee el máximo número de cuentas abiertas...");
+                    System.out.println("Lo sentimos, ya posee el maximo numero de cuentas abiertas...");
                 }
 
             }
@@ -134,7 +134,7 @@ public class AccountOption {
             }
 
             String stringResponse = accountService.validateUser(usuario, clave);
-            System.out.println(stringResponse);
+//            System.out.println(stringResponse);
 
             ObjectMapper mapper = new ObjectMapper();
             Response authResponse = mapper.readValue(stringResponse, Response.class);
@@ -215,7 +215,7 @@ public class AccountOption {
             ObjectMapper mapper = new ObjectMapper();
 
             String stringResponse = accountService.createUser(mapper.writeValueAsString(newUser));
-            System.out.println(stringResponse);
+//            System.out.println(stringResponse);
 
             Response createResponse = mapper.readValue(stringResponse, Response.class);
             if (createResponse.getCod() == 0) {

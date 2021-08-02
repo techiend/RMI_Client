@@ -2,12 +2,11 @@ package com.distribuidos;
 
 import com.distribuidos.implementation.AccountOption;
 import com.distribuidos.inOutObjects.Response;
-import com.distribuidos.model.Account;
-import com.distribuidos.model.Transference;
-import com.distribuidos.model.User;
+import com.distribuidos.model.*;
 import com.distribuidos.service.AccountService;
 import com.distribuidos.service.TransactionalService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.net.MalformedURLException;
@@ -15,12 +14,13 @@ import java.rmi.ConnectException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
 
 public class Cliente {
     public static int maxrows = 40;
-    public static final boolean test = true;
+    public static final boolean test = false;
 
     public static void main(String[] args) {
         try {
@@ -120,11 +120,9 @@ public class Cliente {
                     break;
                 case 2:
                     depositScreen(accountService, transactionalService, user);
-                    enterWait();
                     break;
                 case 3:
-                    System.out.println("\nOpcion #3...");
-                    enterWait();
+                    withdrawalScreen(accountService, transactionalService, user);
                     break;
                 case 4:
                     transferenceScreen(accountService, transactionalService, user);
@@ -141,9 +139,8 @@ public class Cliente {
         }
     }
 
-    public static void accountsScreen(AccountService accountService, TransactionalService transactionalService, User user)
-            throws MalformedURLException, NotBoundException, RemoteException
-    {
+    private static void withdrawalScreen(AccountService accountService, TransactionalService transactionalService, User user) {
+
 
         if (user.getAccounts().size() > 0) {
             boolean shutdown = true;
@@ -156,22 +153,19 @@ public class Cliente {
                 switch (option) {
                     case 1:
                         if (user.getAccounts().size() >= 1) {
-                            String stringResponse = accountService.getAccount(user.getAccounts().get(0).getNumber());
-                            System.out.println(stringResponse);
+                            doWithdrawal(transactionalService, user.getAccounts().get(0).getNumber());
                             enterWait();
                             break;
                         }
                     case 2:
                         if (user.getAccounts().size() >= 2) {
-                            String stringResponse = accountService.getAccount(user.getAccounts().get(1).getNumber());
-                            System.out.println(stringResponse);
+                            doWithdrawal(transactionalService, user.getAccounts().get(1).getNumber());
                             enterWait();
                             break;
                         }
                     case 3:
                         if (user.getAccounts().size() >= 3) {
-                            String stringResponse = accountService.getAccount(user.getAccounts().get(2).getNumber());
-                            System.out.println(stringResponse);
+                            doWithdrawal(transactionalService, user.getAccounts().get(2).getNumber());
                             enterWait();
                             break;
                         }
@@ -188,6 +182,82 @@ public class Cliente {
         else {
             System.out.println("\nNo posee cuentas para consultar...");
             enterWait();
+        }
+    }
+
+    public static void showAccount(Account account){
+        System.out.println("\nCuenta #"+account.getNumber());
+        System.out.println("Saldo disponible: "+account.getCurrent_balance());
+        System.out.println("\nUltimas transacciones:");
+        System.out.println("------------------------------");
+        for (Transaction trx :
+                account.getTransactions()) {
+            System.out.println("Transaccion #"+trx.getId());
+            System.out.println("Monto: "+trx.getAmount());
+            System.out.println("Tipo: "+trx.getType());
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            System.out.println("Fecha: "+sdf.format(trx.getDate()));
+            System.out.println("Origen: "+ ((trx.getSourceNumber() == 0)?" N/A": "#"+trx.getSourceNumber()));
+            System.out.println("Destino: "+ ((trx.getDestinationNumber() == 0)?" N/A": "#"+trx.getDestinationNumber()));
+            System.out.println("Descripcion: "+trx.getDesc());
+            System.out.println("------------------------------");
+        }
+    }
+
+    public static void accountsScreen(AccountService accountService, TransactionalService transactionalService, User user)
+            throws MalformedURLException, NotBoundException, RemoteException
+    {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            if (user.getAccounts().size() > 0) {
+                boolean shutdown = true;
+                while (shutdown) {
+                    clearScreen();
+                    accountSubMenu(user);
+                    Scanner scan = new Scanner(System.in);
+                    int option = scan.nextInt();
+
+                    switch (option) {
+                        case 1:
+                            if (user.getAccounts().size() >= 1) {
+                                String stringResponse = accountService.getAccount(user.getAccounts().get(0).getNumber());
+                                showAccount(mapper.readValue(mapper.writeValueAsString(mapper.readValue(stringResponse, Response.class).getData()), Account.class));
+
+                                enterWait();
+                                break;
+                            }
+                        case 2:
+                            if (user.getAccounts().size() >= 2) {
+                                String stringResponse = accountService.getAccount(user.getAccounts().get(1).getNumber());
+                                showAccount(mapper.readValue(mapper.writeValueAsString(mapper.readValue(stringResponse, Response.class).getData()), Account.class));
+                                enterWait();
+                                break;
+                            }
+                        case 3:
+                            if (user.getAccounts().size() >= 3) {
+                                String stringResponse = accountService.getAccount(user.getAccounts().get(2).getNumber());
+                                showAccount(mapper.readValue(mapper.writeValueAsString(mapper.readValue(stringResponse, Response.class).getData()), Account.class));
+                                enterWait();
+                                break;
+                            }
+                        case 0:
+                            enterWait();
+                            shutdown = false;
+                            break;
+                        default:
+                            System.out.println("\nLa opcion introducida no es correcta...");
+                            enterWait();
+                    }
+                }
+            } else {
+                System.out.println("\nNo posee cuentas para consultar...");
+                enterWait();
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Ha ocurrido un error, por favor intente mas tarde...");
         }
     }
 
@@ -248,7 +318,7 @@ public class Cliente {
         art();
         System.out.println(":----------------------------------------:");
         System.out.println("|"+print("")+"|");
-        System.out.println("|"+print("Seleccione una cuenta a consultar: ")+"|");
+        System.out.println("|"+print("Seleccione una cuenta: ")+"|");
         System.out.println("|"+print("")+"|");
         for (int i = 0; i < user.getAccounts().size(); i++) {
             System.out.println("|"+print(String.format("%d. Cuenta #%d.",i+1, user.getAccounts().get(i).getNumber()))+"|");
@@ -494,16 +564,16 @@ public class Cliente {
                     } else if (option_2 == user.getAccounts().size()+1 ) {
                     	
                     	while (true) {
-                            System.out.print("Introduce el número de cuenta a transferir: ");
+                            System.out.print("Introduce el numero de cuenta a transferir: ");
                             try {
                             	thirdPartyAccount = scan.nextInt();
                                 if (thirdPartyAccount > 0)
                                     break;
                                 else
-                                    System.out.println("Debe introducir un número superior a 0");
+                                    System.out.println("Debe introducir un numero superior a 0");
                             }
                             catch (Exception e) {
-                                System.out.println("Introduce un número válido");
+                                System.out.println("Introduce un numero valido");
                             }
                         }
                     	
@@ -542,7 +612,7 @@ public class Cliente {
                         }
                     	
                     	if ( thirdPartyId.equals( responseThirdPartyId ) ) {
-                    		System.out.println(String.format("Los fondos serán transferidos a %s", thirdUserName));
+                    		System.out.println(String.format("Los fondos seran transferidos a %s", thirdUserName));
                     		enterWait();
                     		makeTransference(accountService,transactionalService, user.getAccounts().get(option-1).getNumber(), thirdPartyAccount );
                         	shutdown = false;
@@ -568,6 +638,46 @@ public class Cliente {
             System.out.println("\nNo posee cuentas para relizar transferencias");
             enterWait();
         }
+    }
+
+    public static void doWithdrawal(TransactionalService transactionalService, int account){
+
+        try {
+            float monto = 0;
+            Scanner scan = new Scanner(System.in);
+
+            while (true) {
+                scan = new Scanner(System.in);
+                System.out.print("Introduce el monto a retirar: ");
+                try {
+                    monto = scan.nextFloat();
+                    if (monto > 0)
+                        break;
+                    else
+                        System.out.println("Debe introducir un monto mayor a 0.");
+                } catch (Exception e) {
+                    System.out.println("Introduce un monto valido con el formado: \"XXXX.XX\"...");
+                }
+            }
+
+            String stringResponse = transactionalService.doWithdrawal(monto, account);
+//            System.out.println(stringResponse);
+
+            ObjectMapper mapper = new ObjectMapper();
+            Response authResponse = mapper.readValue(stringResponse, Response.class);
+
+            if (authResponse.getCod() == 0) {
+                System.out.println("\n"+authResponse.getMsg()+"\n");
+                System.out.println("Monto disponible en su cuenta: " + authResponse.getData());
+            } else {
+                System.out.println("\n"+authResponse.getMsg()+"\n");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Ha ocurrido un error, por favor intente mas tarde...");
+        }
+
     }
 
 }
